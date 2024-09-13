@@ -2,6 +2,8 @@
 # Imports
 # -----------------------------------------------------------------------------
 from dataclasses import dataclass, fields, asdict
+import logging
+
 from MagInkCalWeekly.common import InfoBase
 import json
 
@@ -9,7 +11,7 @@ import json
 # Calendar Config
 # -----------------------------------------------------------------------------
 @dataclass
-class CalendarConfig(InfoBase):
+class ConfigInfo(InfoBase):
     displayTZ: str
     thresholdHours: int
     maxEventsPerDay: int
@@ -25,11 +27,16 @@ class CalendarConfig(InfoBase):
     rotateAngle: int
     is24h: bool
     calendars: list
+    privateDirectory: str
+    credentialsFileName: str
+    tokenFileName: str
+    logger = logging.getLogger("CalendarConfig")
+    
 
     def to_json(self):
         return json.dumps(asdict(self))
 
-    def print_info(self):
+    def log_info(self):
         for field in fields(self):
             value = getattr(self, field.name)
-            print(f"{field.name}: {value}")
+            self.logger.info(f"{field.name}: {value}")

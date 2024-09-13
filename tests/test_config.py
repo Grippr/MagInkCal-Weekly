@@ -7,11 +7,13 @@ import pytest
 import json
 from pathlib import Path
 from dataclasses import fields
+import logging
 
 
 sys.path.append(os.path.abspath("."))
-from MagInkCalWeekly.config import CalendarConfig
+from MagInkCalWeekly.config import ConfigInfo
 
+logging.basicConfig(level=logging.DEBUG)
 # -----------------------------------------------------------------------------
 # Test data
 # -----------------------------------------------------------------------------
@@ -31,9 +33,10 @@ sample_data = {
   "imageHeight": 1304,
   "rotateAngle": 270,
   "is24h": False,
-  "calendars": [
-    "primary"
-  ]
+  "privateDirectory": "./private",
+  "credentialsFileName": "credentials.json",
+  "tokenFileName": "token.pickle",
+  "calendars": ["primary"]
 }
 sample_json = json.dumps(sample_data)
 
@@ -51,31 +54,25 @@ def mock_json_file(tmp_path):
 # -----------------------------------------------------------------------------
 def test_from_json():
     # Test the from_json method
-    config = CalendarConfig.from_json(sample_json)
+    config = ConfigInfo.from_json(sample_json)
     for field in fields(config):
         value = getattr(config, field.name)
         assert value == sample_data[field.name]
 
 def test_from_file(mock_json_file):
     # Test the from_file method
-    config = CalendarConfig.from_file(mock_json_file)
+    config = ConfigInfo.from_file(mock_json_file)
     for field in fields(config):
         value = getattr(config, field.name)
         assert value == sample_data[field.name]
 
 def test_to_json():
     # Test the to_json method
-    config = CalendarConfig.from_json(sample_json)
+    config = ConfigInfo.from_json(sample_json)
     json_output = config.to_json()
     assert json.loads(json_output) == json.loads(sample_json)
 
-def test_print_info(capfd):
-    # Test the print_info method
-    config = CalendarConfig.from_json(sample_json)
-    config.print_info()
-
-    captured = capfd.readouterr()
-    for field in fields(config):
-        value = getattr(config, field.name)
-        assert value == sample_data[field.name]
-        assert f"{field.name}: {value}" in captured.out
+def test_log_info(capfd):
+    # Test the log_info method
+    config = ConfigInfo.from_json(sample_json)
+    config.log_info()

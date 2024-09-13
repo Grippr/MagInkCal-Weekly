@@ -23,8 +23,8 @@ class InfoBase(ABC):
         return cls(**data)
 
     @abstractmethod
-    def print_info(self):
+    def log_info(self):
         """
-        Print the configuration information.
+        Log the configuration information.
         """
         ...

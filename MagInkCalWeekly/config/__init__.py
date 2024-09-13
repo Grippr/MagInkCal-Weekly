@@ -1,1 +1,1 @@
-from .config_info import CalendarConfig
+from .config_info import ConfigInfo
