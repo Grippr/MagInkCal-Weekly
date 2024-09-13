@@ -13,7 +13,9 @@
   "imageHeight": 1304,
   "rotateAngle": 270,
   "is24h": false,
-  "calendars": [
-    "primary"
-  ]
+
+  "privateDirectory": "./private",
+  "credentialsFileName": "credentials.json",
+  "tokenFileName": "token.pickle",
+  "calendars": ["primary"]
 }
