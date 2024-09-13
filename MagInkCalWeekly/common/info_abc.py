@@ -12,27 +12,15 @@ class InfoBase(ABC):
         ...
 
     @classmethod
-    @abstractmethod
     def from_file(cls, file_path):
-        """
-        Load configuration from a file.
-        """
-        ...
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return cls(**data)
 
     @classmethod
-    @abstractmethod
     def from_json(cls, json_str):
-        """
-        Load configuration from a JSON string.
-        """
-        ...
-
-    @abstractmethod
-    def to_json(self):
-        """
-        Convert the configuration to a JSON string.
-        """
-        ...
+        data = json.loads(json_str)
+        return cls(**data)
 
     @abstractmethod
     def print_info(self):
