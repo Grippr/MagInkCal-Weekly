@@ -18,18 +18,17 @@ import logging
 
 class GcalHelper:
 
-    def __init__(self):
+    def __init__(self, cred_path, token_path):
         self.logger = logging.getLogger('maginkcal')
         # Initialise the Google Calendar using the provided credentials and token
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-        self.currPath = str(pathlib.Path(__file__).parent.absolute())
 
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists(self.currPath + '/token.pickle'):
-            with open(self.currPath + '/token.pickle', 'rb') as token:
+        if os.path.exists(token_path):
+            with open(token_path, 'rb') as token:
                 creds = pickle.load(token)
         # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
@@ -37,10 +36,10 @@ class GcalHelper:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    self.currPath + '/credentials.json', SCOPES)
+                    cred_path, SCOPES)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open(self.currPath + '/token.pickle', 'wb') as token:
+            with open(token_path,"wb") as token:
                 pickle.dump(creds, token)
 
         self.service = build('calendar', 'v3', credentials=creds, cache_discovery=False)

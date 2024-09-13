@@ -13,14 +13,16 @@ class InfoBase(ABC):
 
     @classmethod
     def from_file(cls, file_path):
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-        return cls(**data)
+        ...
 
     @classmethod
+    @abstractmethod
     def from_json(cls, json_str):
-        data = json.loads(json_str)
-        return cls(**data)
+        ...
+
+    @abstractmethod
+    def to_json(cls, json_str):
+        ...
 
     @abstractmethod
     def log_info(self):

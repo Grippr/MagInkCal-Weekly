@@ -3,16 +3,18 @@
 # -----------------------------------------------------------------------------
 from dataclasses import dataclass, fields, asdict
 import logging
+import json
+import os
+from pytz import timezone
 
 from MagInkCalWeekly.common import InfoBase
-import json
 
 # -----------------------------------------------------------------------------
 # Calendar Config
 # -----------------------------------------------------------------------------
 @dataclass
 class ConfigInfo(InfoBase):
-    displayTZ: str
+    displayTZ: timezone
     thresholdHours: int
     maxEventsPerDay: int
     isDisplayToScreen: bool
@@ -32,6 +34,16 @@ class ConfigInfo(InfoBase):
     tokenFileName: str
     logger = logging.getLogger("CalendarConfig")
     
+    @classmethod
+    def from_file(cls, file_path):
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return cls(**data)
+
+    @classmethod
+    def from_json(cls, json_str):
+        data = json.loads(json_str)
+        return cls(**data)
 
     def to_json(self):
         return json.dumps(asdict(self))
@@ -40,3 +52,13 @@ class ConfigInfo(InfoBase):
         for field in fields(self):
             value = getattr(self, field.name)
             self.logger.info(f"{field.name}: {value}")
+    
+    # CalendarInfo Utilities
+    def get_credential_path(self):
+        return os.path.join(self.privateDirectory, self.credentialsFileName)
+
+    def get_token_path(self):
+        return os.path.join(self.privateDirectory, self.tokenFileName)
+    
+    def get_tz(self):
+        return timezone(self.displayTZ)
