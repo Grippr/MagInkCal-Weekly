@@ -1,8 +1,8 @@
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-from dataclasses import dataclass, asdict
-from common import InfoBase
+from dataclasses import dataclass, asdict, fields
+from MagInkCalWeekly.common import InfoBase
 import json
 
 # -----------------------------------------------------------------------------
@@ -35,24 +35,14 @@ class CalendarConfig(InfoBase):
     @classmethod
     def from_json(cls, json_str):
         data = json.loads(json_str)
+        print("HI")
         return cls(**data)
 
     def to_json(self):
-        json.dumps(asdict(self))
+        return json.dumps(asdict(self))
 
     def print_info(self):
-        print(f"displayTZ:            {self.displayTZ}")
-        print(f"thresholdHours:       {self.thresholdHours}")
-        print(f"maxEventsPerDay:      {self.maxEventsPerDay}")
-        print(f"isDisplayToScreen:    {self.isDisplayToScreen}")
-        print(f"isShutdownOnComplete: {self.isShutdownOnComplete}")
-        print(f"batteryDisplayMode:   {self.batteryDisplayMode}")
-        print(f"weekStartDay:         {self.weekStartDay}")
-        print(f"dayOfWeekText:        {self.dayOfWeekText}")
-        print(f"screenWidth:          {self.screenWidth}")
-        print(f"screenHeight:         {self.screenHeight}")
-        print(f"imageWidth:           {self.imageWidth}")
-        print(f"imageHeight:          {self.imageHeight}")
-        print(f"rotateAngle:          {self.rotateAngle}")
-        print(f"is24h:                {self.is24h}")
-        print(f"calendars:            {self.calendars}")
+        print("HI")
+        for field in fields(self):
+            value = getattr(self, field.name)
+            print(f"{field.name}: {value}")

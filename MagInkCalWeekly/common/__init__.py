@@ -1,1 +1,1 @@
-from info_abc import InfoBase
+from .info_abc import InfoBase
