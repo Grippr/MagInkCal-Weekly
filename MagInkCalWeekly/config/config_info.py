@@ -32,7 +32,9 @@ class ConfigInfo(InfoBase):
     privateDirectory: str
     credentialsFileName: str
     tokenFileName: str
+    calendarImagePath: str
     logger = logging.getLogger("CalendarConfig")
+
     
     @classmethod
     def from_file(cls, file_path):

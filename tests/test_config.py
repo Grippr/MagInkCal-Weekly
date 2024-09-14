@@ -14,9 +14,16 @@ sys.path.append(os.path.abspath("."))
 from MagInkCalWeekly.config import ConfigInfo
 
 logging.basicConfig(level=logging.DEBUG)
+
 # -----------------------------------------------------------------------------
 # Test data
 # -----------------------------------------------------------------------------
+@pytest.fixture
+def mock_calendar_image_filename(tmp_path):
+    file_path = tmp_path / "calendar_image.png"
+    return file_path
+calendar_path = str(mock_calendar_image_filename)
+
 # Sample data 
 sample_data = {
   "displayTZ": "EST",
@@ -36,18 +43,18 @@ sample_data = {
   "privateDirectory": "./private",
   "credentialsFileName": "credentials.json",
   "tokenFileName": "token.pickle",
-  "calendars": ["primary"]
+  "calendars": ["primary"],
+  "calendarImagePath": calendar_path
 }
+
 sample_json = json.dumps(sample_data)
 
-# -----------------------------------------------------------------------------
-# Fixtures
-# -----------------------------------------------------------------------------
 @pytest.fixture
 def mock_json_file(tmp_path):
     file_path = tmp_path / "config.json"
     file_path.write_text(sample_json)
     return file_path
+
 
 # -----------------------------------------------------------------------------
 # Tests

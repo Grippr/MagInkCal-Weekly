@@ -11,11 +11,12 @@
   "screenHeight": 984,
   "imageWidth": 984,
   "imageHeight": 1304,
-  "rotateAngle": 270,
+  "rotateAngle": 0,
   "is24h": false,
 
   "privateDirectory": "./private",
   "credentialsFileName": "credentials.json",
   "tokenFileName": "token.pickle",
-  "calendars": ["primary"]
+  "calendars": ["primary"],
+  "calendarImagePath": "./calendar_image.png"
 }
