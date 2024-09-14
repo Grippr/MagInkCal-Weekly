@@ -29,9 +29,6 @@ def test_event_info_serialization():
 
     json_str = event.to_json()
     event_from_json = EventInfo.from_json(json_str)
-    logging.basicConfig(level=logging.INFO)
-    event.log_info(logging.getLogger("test_logger"))
-
     assert event == event_from_json
 
 def test_calendar_info_serialization():
