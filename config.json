@@ -1,5 +1,5 @@
 {
-  "displayTZ": "Asia/Hong_Kong",
+  "displayTZ": "US/Eastern",
   "thresholdHours": 24,
   "maxEventsPerDay": 3,
   "isDisplayToScreen": false,

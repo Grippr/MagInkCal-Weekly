@@ -133,15 +133,28 @@ class CalendarInfo(InfoBase):
 
         return ret
 
+    @classmethod
+    def from_file(cls, filename):
+        with open(filename, "r") as file:
+            json_str = file.read()
+        return cls.from_json(json_str)
 
     def to_json(self):
         return json.dumps({
             "events": [json.loads(event.to_json()) for event in self.events]
         })
 
-    def log_info(self):
-        for event in self.events:
-            event.log_info(self.logger)
+    def to_file(self, filename):
+        json_str = self.to_json()
+        with open(filename, "w") as file:
+            file.write(json.dumps(json.loads(json_str), indent=4))
+
+    def log_info(self, full=False):
+        self.logger.info("Calendar Info:")
+        self.logger.info(f"    Num Events:{len(self.events)}")
+        if full:
+            for event in self.events:
+                event.log_info(self.logger)
 
 def debugthis():
     logging.basicConfig(level=logging.INFO)

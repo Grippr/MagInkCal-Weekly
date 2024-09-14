@@ -59,5 +59,27 @@ def test_calendar_info_serialization():
 
     assert calendar.events == calendar_from_json.events
 
-if __name__ == "__main__":
-    pytest.main()
+def test_calendar_info_from_file():
+    # Read directly from the file
+    calendar_info = CalendarInfo.from_file("tests/data/test_cal.json") 
+
+    # Verify the deserialized object
+    assert len(calendar_info.events) == 75
+
+    event1 = calendar_info.events[15]
+    assert event1.summary == "Jorge Dad in NY"
+    assert event1.startDatetime.replace(tzinfo=None) == dt.datetime(2024, 9, 13, 0, 0, 0)
+    assert event1.endDatetime.replace(tzinfo=None) == dt.datetime(2024, 9, 15, 23, 59, 59, 999999)
+    assert event1.isMultiday is True
+    assert event1.allday is True
+    assert event1.isUpdated is False
+    assert event1.updatedDatetime.replace(tzinfo=None) == dt.datetime(2024, 9, 10, 13, 22, 46, 912000)
+
+    event2 = calendar_info.events[60]
+    assert event2.summary == "Drum Circle"
+    assert event2.startDatetime.replace(tzinfo=None) == dt.datetime(2024, 10, 6, 10, 0)
+    assert event2.endDatetime.replace(tzinfo=None) == dt.datetime(2024, 10, 6, 11, 0)
+    assert event2.isMultiday is False
+    assert event2.allday is False
+    assert event2.isUpdated is False
+    assert event2.updatedDatetime.replace(tzinfo=None) == dt.datetime(2024, 9, 1, 11, 49, 3, 890000)
