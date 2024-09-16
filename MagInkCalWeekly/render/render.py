@@ -73,20 +73,8 @@ class RenderHelper(InfoBase):
             is24h=config.is24h,
             calendarImagePath=config.calendarImagePath,
         )
-        ret.fix_rotation()
         return ret
     
-    def fix_rotation(self):
-        # Rotate before saving
-        if self.rotateAngle % 180 != 0:
-            imageHeight = self.imageHeight
-            self.imageHeight = self.imageWidth
-            self.imageWidth = imageHeight
-
-            screenHeight = self.screenHeight
-            self.screenHeight = self.screenWidth
-            self.screenWidth = screenHeight
-
     def get_image(self):
         # Create a new image with a white background
         image = Image.new("RGB", (self.screenWidth, self.screenHeight), WHITE)
