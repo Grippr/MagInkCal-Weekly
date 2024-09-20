@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 from dataclasses import dataclass, fields, asdict
 import logging
-import json
+import json5 as json # json5 is a superset of JSON that allows comments
 import os
 from pytz import timezone
 
@@ -24,8 +24,6 @@ class ConfigInfo(InfoBase):
     dayOfWeekText: list
     screenWidth: int
     screenHeight: int
-    imageWidth: int
-    imageHeight: int
     rotateAngle: int
     is24h: bool
     calendars: list
@@ -33,6 +31,7 @@ class ConfigInfo(InfoBase):
     credentialsFileName: str
     tokenFileName: str
     calendarImagePath: str
+    numWeeks: int
     logger = logging.getLogger("CalendarConfig")
 
     

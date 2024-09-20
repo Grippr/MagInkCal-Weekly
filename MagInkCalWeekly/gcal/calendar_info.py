@@ -13,6 +13,23 @@ from .gcal import GcalHelper
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
+def _datetime_serializer(obj):
+    if isinstance(obj, dt.datetime):
+        return obj.isoformat()
+    elif isinstance(obj, dt.date):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
+
+def _datetime_parser(dct):
+    for key, value in dct.items():
+        try:
+            if key=="currDate" or key=="startDate" or key=="endDate":
+                dct[key] = dt.date.fromisoformat(value)
+            else:
+                dct[key] = dt.datetime.fromisoformat(value)
+        except (ValueError, TypeError):
+            pass
+    return dct
 
 # -----------------------------------------------------------------------------
 # Event Info
@@ -29,23 +46,13 @@ class EventInfo(dict, InfoBase):
 
     @classmethod
     def from_json(cls, json_str):
-        def datetime_parser(dct):
-            for key, value in dct.items():
-                try:
-                    dct[key] = dt.datetime.fromisoformat(value)
-                except (ValueError, TypeError):
-                    pass
-            return dct
 
-        data = json.loads(json_str, object_hook=datetime_parser)
+
+        data = json.loads(json_str, object_hook=_datetime_parser)
         return cls(**data)
 
     def to_json(self):
-        def datetime_serializer(obj):
-            if isinstance(obj, dt.datetime):
-                return obj.isoformat()
-            raise TypeError(f"Type {type(obj)} not serializable")
-        return json.dumps(asdict(self), default=datetime_serializer)
+        return json.dumps(asdict(self), default=_datetime_serializer)
 
     def log_info(self, logger, padding="  "):
         logger.info(f"{padding}Event starting on {self.startDatetime}:")
@@ -53,6 +60,19 @@ class EventInfo(dict, InfoBase):
         for field in fields(self):
             value = getattr(self, field.name)
             logger.info(f"{padding}{padding}{field.name:<{max_field_length}}: {value}")
+
+    def get_cal_str(self, max_width):
+        if self.allday:
+            ret = f"{self.summary}"
+        else:
+            time_str = self.startDatetime.strftime("%H:%M").lstrip("0")
+            ret = f"{time_str} {self.summary}"
+
+        if len(ret) > max_width:
+            ret = ret[:max_width-3] + "..."
+        return ret
+
+
 
 # -----------------------------------------------------------------------------
 # Calendar Info
@@ -78,9 +98,11 @@ class CalendarInfo(InfoBase):
 
         currDate = currDatetime.date()
         calStartDate = currDate - dt.timedelta(days=((currDate.weekday() + (7 - config.weekStartDay)) % 7))
-        calEndDate = calStartDate + dt.timedelta(days=(5 * 7 - 1))
+        calEndDate = calStartDate + dt.timedelta(days=(config.numWeeks * 7 - 1))
         calStartDatetime = displayTZ.localize(dt.datetime.combine(calStartDate, dt.datetime.min.time()))
         calEndDatetime = displayTZ.localize(dt.datetime.combine(calEndDate, dt.datetime.max.time()))
+
+        assert calStartDate.weekday() == config.weekStartDay, f"Week start day ({config.weekStartDay}) does not match the start date ({calStartDate.weekday()})"
 
         cred_path=config.get_credential_path()
         token_path=config.get_token_path()
@@ -112,24 +134,23 @@ class CalendarInfo(InfoBase):
         for event_dict in eventList:
             event = EventInfo(**event_dict)
             ret.events.append(event)
+        ret.currDate = currDate
+        ret.startDate = calStartDate
+        ret.endDate = calEndDate
 
         return ret
 
     @classmethod
     def from_json(cls, json_str):
-        def datetime_parser(dct):
-            for key, value in dct.items():
-                try:
-                    dct[key] = dt.datetime.fromisoformat(value)
-                except (ValueError, TypeError):
-                    pass
-            return dct
-
-        data = json.loads(json_str, object_hook=datetime_parser)
+        data = json.loads(json_str, object_hook=_datetime_parser)
         events = [EventInfo(**event) for event in data['events']]
 
         ret = cls()
         ret.events = events
+
+        ret.currDate      = data['currDate']
+        ret.startDate = data['startDate']
+        ret.endDate   = data['endDate']
 
         return ret
 
@@ -141,7 +162,10 @@ class CalendarInfo(InfoBase):
 
     def to_json(self):
         return json.dumps({
-            "events": [json.loads(event.to_json()) for event in self.events]
+            "events": [json.loads(event.to_json()) for event in self.events],
+            "calStartDate": _datetime_serializer(self.startDate),
+            "calEndDate": _datetime_serializer(self.endDate),
+            "currDate": _datetime_serializer(self.currDate)
         })
 
     def to_file(self, filename):
@@ -151,13 +175,21 @@ class CalendarInfo(InfoBase):
 
     def log_info(self, full=False):
         self.logger.info("Calendar Info:")
+        self.logger.info(f"    Current day: {self.currDate}")
+        self.logger.info(f"    Cal Start Dat: {self.startDate}")
+        self.logger.info(f"    Cal End Date: {self.endDate}")
         self.logger.info(f"    Num Events:{len(self.events)}")
         if full:
             for event in self.events:
                 event.log_info(self.logger)
+    
+    def get_events_from_date(self, date):
+        return [event for event in self.events if event.startDatetime.date() == date]
+    
 
-def debugthis():
+def debug_this():
     logging.basicConfig(level=logging.INFO)
-    config = ConfigInfo.from_file("config.json")
+    config = ConfigInfo.from_file("config.json5")
     cal_info = CalendarInfo.from_config(config=config)
     cal_info.log_info()
+    print(cal_info.to_json())

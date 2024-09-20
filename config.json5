@@ -1,0 +1,27 @@
+{
+  // Calendar Information
+  "displayTZ": "US/Eastern",
+  "numWeeks": 5,
+  "calendars": ["primary"],
+  "calendarImagePath": "./calendar_image.png",
+  "weekStartDay": 6,
+  "dayOfWeekText": ["M", "T", "W", "T", "F", "S", "S"],
+  "thresholdHours": 24,
+  "is24h": false,
+  "maxEventsPerDay": 4,
+
+  // Display Information
+  "screenWidth": 1304,
+  "screenHeight": 984,
+  "rotateAngle": 0,
+  "batteryDisplayMode": 1,
+
+  // Credentials
+  "privateDirectory": "./private",
+  "credentialsFileName": "credentials.json",
+  "tokenFileName": "token.pickle",
+
+  // Debug
+  "isDisplayToScreen": false,
+  "isShutdownOnComplete": false
+}

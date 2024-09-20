@@ -4,7 +4,7 @@
 import os
 import sys
 import pytest
-import json
+import json5 as json
 from pathlib import Path
 from dataclasses import fields
 import logging
@@ -36,15 +36,14 @@ sample_data = {
   "dayOfWeekText": ["M", "T", "W", "T", "F", "S", "S"],
   "screenWidth": 1304,
   "screenHeight": 984,
-  "imageWidth": 984,
-  "imageHeight": 1304,
   "rotateAngle": 270,
   "is24h": False,
   "privateDirectory": "./private",
   "credentialsFileName": "credentials.json",
   "tokenFileName": "token.pickle",
   "calendars": ["primary"],
-  "calendarImagePath": calendar_path
+  "calendarImagePath": calendar_path,
+  "numWeeks": 4
 }
 
 sample_json = json.dumps(sample_data)
