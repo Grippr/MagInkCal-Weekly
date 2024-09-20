@@ -158,7 +158,7 @@ def test_calendar_info_from_file():
     assert event2.isUpdated is False
     assert event2.updatedDatetime.replace(tzinfo=None) == dt.datetime(2024, 9, 1, 11, 49, 3, 890000)
 
-    assert calendar_info.currDate == dt.date(2024, 9, 20)
+    assert calendar_info.currDate == dt.date(2024, 9, 15)
 
 import pytest
 import datetime as dt

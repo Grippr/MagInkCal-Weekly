@@ -39,10 +39,8 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 GREY = (128, 128, 128)
-# BLACK = 0
-# GREY = 128
-# WHITE = 255
 
+sf = 1 #scaling factor
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
@@ -61,6 +59,30 @@ class RenderHelper(InfoBase):
     is24h: bool
     calendarImagePath: str
     logger = logging.getLogger('renderer')
+
+    ## Configuration
+
+    # Calendar Margins
+    top_margin    = 10*sf
+    left_margin   = 10*sf
+    bottom_margin = 10*sf
+    right_margin  = 10*sf
+
+    # Month spacing
+    month_to_day_spacing = 20*sf
+
+    # Event spacing
+    day_to_event_spacing = 5*sf
+    max_event_width = 17
+    event_margins = 5*sf
+
+    # Fonts
+    font_bold = pathlib.Path(__file__).parent / "Quattrocento-Bold.ttf"
+    font_regular = pathlib.Path(__file__).parent / "Quattrocento-Regular.ttf"
+
+    month_size = 80*sf
+    day_size = 35*sf
+    event_size = 18*sf
 
     @classmethod
     def from_config(cls, config: ConfigInfo):
@@ -81,35 +103,9 @@ class RenderHelper(InfoBase):
         return ret
     
     def get_image(self, cal_info: CalendarInfo):
-        ## Configuration
         # Scaling: PIL doesn't support subpixel rendering, so we need to scale up the image, then downsize it before displaying
-        self.scaling_factor = 1
-        sf = self.scaling_factor # shorthand
         self.high_res_width = self.screenWidth * sf
         self.high_res_height = self.screenHeight * sf
-
-        # Calendar Margins
-        self.top_margin    = 10*sf
-        self.left_margin   = 10*sf
-        self.bottom_margin = 10*sf
-        self.right_margin  = 10*sf
-    
-        # Month spacing
-        self.month_to_day_spacing = 20*sf
-
-        # Event spacing
-        self.day_to_event_spacing = 5*sf
-        self.max_event_width = 17
-        self.event_margins = 5*sf
-
-        # Fonts
-        self.font_bold = pathlib.Path(__file__).parent / "Quattrocento-Bold.ttf"
-        self.font_regular = pathlib.Path(__file__).parent / "Quattrocento-Regular.ttf"
-
-        self.month_size = 80*sf
-        self.day_size = 35*sf
-        self.event_size = 18*sf
-
 
         # Create a new image with a white background
         image = Image.new("RGB", (self.high_res_width, self.high_res_height), WHITE)
@@ -183,9 +179,6 @@ class RenderHelper(InfoBase):
     def from_json(self,  json_str):
         ...
 
-    def to_json(cls, json_str):
-        ...
-    
     def log_info(self):
         for field in fields(self):
             value = getattr(self, field.name)

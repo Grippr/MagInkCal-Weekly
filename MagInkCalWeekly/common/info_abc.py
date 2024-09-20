@@ -16,11 +16,9 @@ class InfoBase(ABC):
         ...
 
     @classmethod
-    @abstractmethod
     def from_json(cls, json_str):
         ...
 
-    @abstractmethod
     def to_json(cls, json_str):
         ...
 

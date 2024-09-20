@@ -163,8 +163,8 @@ class CalendarInfo(InfoBase):
     def to_json(self):
         return json.dumps({
             "events": [json.loads(event.to_json()) for event in self.events],
-            "calStartDate": _datetime_serializer(self.startDate),
-            "calEndDate": _datetime_serializer(self.endDate),
+            "startDate": _datetime_serializer(self.startDate),
+            "endDate": _datetime_serializer(self.endDate),
             "currDate": _datetime_serializer(self.currDate)
         })
 
