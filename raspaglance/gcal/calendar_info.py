@@ -62,11 +62,15 @@ class EventInfo(dict, InfoBase):
             logger.info(f"{padding}{padding}{field.name:<{max_field_length}}: {value}")
 
     def get_cal_str(self, max_width):
+        ret = ""
+        if self.isMultiday:
+            ret += ">"
+
         if self.allday:
-            ret = f"{self.summary}"
+            ret += f"{self.summary}"
         else:
             time_str = self.startDatetime.strftime("%H:%M").lstrip("0")
-            ret = f"{time_str} {self.summary}"
+            ret += f"{time_str} {self.summary}"
 
         if len(ret) > max_width:
             ret = ret[:max_width-3] + "..."
