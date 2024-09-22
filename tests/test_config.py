@@ -11,7 +11,7 @@ import logging
 
 
 sys.path.append(os.path.abspath("."))
-from raspaglance.config import ConfigInfo
+from MagInkCalPy.config import ConfigInfo
 
 logging.basicConfig(level=logging.DEBUG)
 

@@ -23,17 +23,17 @@ import sys
 import logging
 
 sys.path.append(os.path.abspath("."))
-from raspaglance.config import ConfigInfo
-from raspaglance.gcal.calendar_info import CalendarInfo
-from raspaglance.render.render import RenderHelper
-from raspaglance.power import PowerHelper
+from MagInkCalPy.config import ConfigInfo
+from MagInkCalPy.gcal.calendar_info import CalendarInfo
+from MagInkCalPy.render.render import RenderHelper
+from MagInkCalPy.power import PowerHelper
 
 logging.basicConfig(level=logging.DEBUG)
 
 def main():
     # Create and configure logger
     logging.basicConfig(filename="logfile.log", format='%(asctime)s %(levelname)s - %(message)s', filemode='a')
-    logger = logging.getLogger('raspaglance')
+    logger = logging.getLogger('MagInkCalPy:main')
     logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
     logger.setLevel(logging.INFO)
     logger.info("Starting daily calendar update")

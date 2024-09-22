@@ -25,9 +25,8 @@ import pathlib
 
 from PIL import Image, ImageDraw, ImageFont
 
-from raspaglance.common import InfoBase
-from raspaglance.config.config_info import ConfigInfo
-from raspaglance.gcal.calendar_info import CalendarInfo
+from MagInkCalPy.config.config_info import ConfigInfo
+from MagInkCalPy.gcal.calendar_info import CalendarInfo
 
 import datetime as dt
 
@@ -45,7 +44,7 @@ sf = 1 #scaling factor
 # Imports
 # -----------------------------------------------------------------------------
 @dataclass
-class RenderHelper(InfoBase):
+class RenderHelper():
     maxEventsPerDay: int
     isDisplayToScreen: bool
     isShutdownOnComplete:bool
@@ -58,7 +57,7 @@ class RenderHelper(InfoBase):
     numWeeks: int
     is24h: bool
     calendarImagePath: str
-    logger = logging.getLogger('renderer')
+    logger = logging.getLogger('MagInkCalPy:RenderHelper')
 
     ## Configuration
 

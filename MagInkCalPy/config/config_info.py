@@ -7,13 +7,11 @@ import json5 as json # json5 is a superset of JSON that allows comments
 import os
 from pytz import timezone
 
-from raspaglance.common import InfoBase
-
 # -----------------------------------------------------------------------------
 # Calendar Config
 # -----------------------------------------------------------------------------
 @dataclass
-class ConfigInfo(InfoBase):
+class ConfigInfo():
     displayTZ: timezone
     thresholdHours: int
     maxEventsPerDay: int
@@ -32,7 +30,7 @@ class ConfigInfo(InfoBase):
     tokenFileName: str
     calendarImagePath: str
     numWeeks: int
-    logger = logging.getLogger("CalendarConfig")
+    logger = logging.getLogger("MagInkCalPy:ConfigInfo")
 
     
     @classmethod

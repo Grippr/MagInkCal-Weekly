@@ -10,10 +10,9 @@ import logging
 
 
 class DisplayHelper:
-
     def __init__(self, width, height):
         # Initialise the display
-        self.logger = logging.getLogger('raspaglance')
+        self.logger = logging.getLogger('MagInkCalPy:DisplayHelper')
         self.screenwidth = width
         self.screenheight = height
         self.epd = eink.EPD()

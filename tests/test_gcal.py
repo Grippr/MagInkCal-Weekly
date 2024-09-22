@@ -9,7 +9,7 @@ import json
 import logging
 
 sys.path.append(os.path.abspath("."))
-from raspaglance.gcal import EventInfo, CalendarInfo
+from MagInkCalPy.gcal import EventInfo, CalendarInfo
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -159,7 +159,3 @@ def test_calendar_info_from_file():
     assert event2.updatedDatetime.replace(tzinfo=None) == dt.datetime(2024, 9, 1, 11, 49, 3, 890000)
 
     assert calendar_info.currDate == dt.date(2024, 9, 15)
-
-import pytest
-import datetime as dt
-from raspaglance.gcal.calendar_info import CalendarInfo, EventInfo

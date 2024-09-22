@@ -6,8 +6,7 @@ import datetime as dt
 import json
 import logging
 
-from raspaglance.common import InfoBase
-from raspaglance.config import ConfigInfo
+from MagInkCalPy.config import ConfigInfo
 from .gcal import GcalHelper
 
 # -----------------------------------------------------------------------------
@@ -35,7 +34,7 @@ def _datetime_parser(dct):
 # Event Info
 # -----------------------------------------------------------------------------
 @dataclass
-class EventInfo(dict, InfoBase):
+class EventInfo():
     summary: str
     startDatetime: dt.datetime
     endDatetime: dt.datetime
@@ -81,11 +80,11 @@ class EventInfo(dict, InfoBase):
 # -----------------------------------------------------------------------------
 # Calendar Info
 # -----------------------------------------------------------------------------
-class CalendarInfo(InfoBase):
+class CalendarInfo():
     def __init__(
         self,
     ):
-        self.logger = logging.getLogger("CalendarInfo")
+        self.logger = logging.getLogger("MagInkCalPy:CalendarInfo")
         self.events = []
 
     @classmethod
