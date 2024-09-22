@@ -62,7 +62,7 @@ def main():
     # Render an Image
     logger.info("Rendering image")
     renderHelper = RenderHelper.from_config(config=config)
-    image = renderHelper.get_image(cal_info)
+    image = renderHelper.get_image(cal_info, currBatteryLevel=currBatteryLevel)
     image.save(config.calendarImagePath)
 
 

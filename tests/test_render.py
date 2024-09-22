@@ -61,7 +61,7 @@ def test_from_config(config):
     assert render_helper.calendarImagePath == config.calendarImagePath
 
 def test_get_image(render_helper, cal_info):
-    image = render_helper.get_image(cal_info)
+    image = render_helper.get_image(cal_info, .5)
     assert isinstance(image, Image.Image)
     assert image.size == (render_helper.high_res_width, render_helper.high_res_height)
 

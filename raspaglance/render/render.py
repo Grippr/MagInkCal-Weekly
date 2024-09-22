@@ -102,7 +102,7 @@ class RenderHelper(InfoBase):
         )
         return ret
     
-    def get_image(self, cal_info: CalendarInfo):
+    def get_image(self, cal_info: CalendarInfo, currBatteryLevel: float):
         # Scaling: PIL doesn't support subpixel rendering, so we need to scale up the image, then downsize it before displaying
         self.high_res_width = self.screenWidth * sf
         self.high_res_height = self.screenHeight * sf
