@@ -63,6 +63,7 @@ def main():
     logger.info("Rendering image")
     renderHelper = RenderHelper.from_config(config=config)
     image = renderHelper.get_image(cal_info)
+    image.save(config.calendarImagePath)
 
 
     #     calDict = {'events': eventList, 'calStartDate': calStartDate, 'today': currDate, 'lastRefresh': currDatetime,

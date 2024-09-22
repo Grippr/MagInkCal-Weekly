@@ -7,7 +7,7 @@ Installation
 - `sudo apt upgrade`
 - `sudo apt update`
 - `sudo apt-get install git`
-- `sudo apt-get install git`
+- `sudo apt-get install netcat-openbsd`
 - `git clone https://github.com/Grippr/Rasp-A-Glance.git`
 - `python -m venv raspaglance-venv`
 - `. raspaglance-venv/bin/activate`
