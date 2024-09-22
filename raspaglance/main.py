@@ -26,6 +26,7 @@ sys.path.append(os.path.abspath("."))
 from raspaglance.config import ConfigInfo
 from raspaglance.gcal.calendar_info import CalendarInfo
 from raspaglance.render.render import RenderHelper
+from raspaglance.power import PowerHelper
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -41,24 +42,28 @@ def main():
     logger.info("Reading config")
     config = ConfigInfo.from_file("config.json5")
 
-    # Read the calendar
+    # # Read the calendar
     logger.info("Reading calendar")
     cal_info = CalendarInfo.from_config(config=config)
+
+    # Establish current date and time information
+    # Note: For Python datetime.weekday() - Monday = 0, Sunday = 6
+    # For this implementation, each week starts on a Sunday and the calendar begins on the nearest elapsed Sunday
+    # The calendar will also display 5 weeks of events to cover the upcoming month, ending on a Saturday
+    try: 
+        powerService = PowerHelper()
+        powerService.sync_time()
+        currBatteryLevel = powerService.get_battery()
+        logger.info('Battery level at start: {:.3f}'.format(currBatteryLevel))
+
+    except FileNotFoundError as e:
+        logger.warning("Ensure that the PiSugar service is running. Continuing without battery level check.")
 
     # Render an Image
     logger.info("Rendering image")
     renderHelper = RenderHelper.from_config(config=config)
     image = renderHelper.get_image(cal_info)
 
-    # try:
-    #     # Establish current date and time information
-    #     # Note: For Python datetime.weekday() - Monday = 0, Sunday = 6
-    #     # For this implementation, each week starts on a Sunday and the calendar begins on the nearest elapsed Sunday
-    #     # The calendar will also display 5 weeks of events to cover the upcoming month, ending on a Saturday
-    #     powerService = PowerHelper()
-    #     powerService.sync_time()
-    #     currBatteryLevel = powerService.get_battery()
-    #     logger.info('Battery level at start: {:.3f}'.format(currBatteryLevel))
 
     #     calDict = {'events': eventList, 'calStartDate': calStartDate, 'today': currDate, 'lastRefresh': currDatetime,
     #                'batteryLevel': currBatteryLevel, 'batteryDisplayMode': batteryDisplayMode,
