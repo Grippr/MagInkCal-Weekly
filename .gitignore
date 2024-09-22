@@ -1,5 +1,5 @@
 *.ipynb
 *__pycache__
 *_pytest
-venv
+raspaglance-venv
 calendar_image.png

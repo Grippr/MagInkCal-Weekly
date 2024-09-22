@@ -19,7 +19,7 @@ import logging
 class GcalHelper:
 
     def __init__(self, cred_path, token_path):
-        self.logger = logging.getLogger('maginkcal')
+        self.logger = logging.getLogger('raspaglance')
         # Initialise the Google Calendar using the provided credentials and token
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 

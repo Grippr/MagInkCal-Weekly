@@ -13,7 +13,7 @@ class DisplayHelper:
 
     def __init__(self, width, height):
         # Initialise the display
-        self.logger = logging.getLogger('maginkcal')
+        self.logger = logging.getLogger('raspaglance')
         self.screenwidth = width
         self.screenheight = height
         self.epd = eink.EPD()
