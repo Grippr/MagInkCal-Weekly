@@ -7,7 +7,7 @@ import json5 as json # json5 is a superset of JSON that allows comments
 import os
 from pytz import timezone
 
-from MagInkCalWeekly.common import InfoBase
+from raspaglance.common import InfoBase
 
 # -----------------------------------------------------------------------------
 # Calendar Config

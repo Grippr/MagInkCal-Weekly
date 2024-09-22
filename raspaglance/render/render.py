@@ -25,9 +25,9 @@ import pathlib
 
 from PIL import Image, ImageDraw, ImageFont
 
-from MagInkCalWeekly.common import InfoBase
-from MagInkCalWeekly.config.config_info import ConfigInfo
-from MagInkCalWeekly.gcal.calendar_info import CalendarInfo
+from raspaglance.common import InfoBase
+from raspaglance.config.config_info import ConfigInfo
+from raspaglance.gcal.calendar_info import CalendarInfo
 
 import datetime as dt
 

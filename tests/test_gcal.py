@@ -9,7 +9,7 @@ import json
 import logging
 
 sys.path.append(os.path.abspath("."))
-from MagInkCalWeekly.gcal import EventInfo, CalendarInfo
+from raspaglance.gcal import EventInfo, CalendarInfo
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -162,4 +162,4 @@ def test_calendar_info_from_file():
 
 import pytest
 import datetime as dt
-from MagInkCalWeekly.gcal.calendar_info import CalendarInfo, EventInfo
+from raspaglance.gcal.calendar_info import CalendarInfo, EventInfo

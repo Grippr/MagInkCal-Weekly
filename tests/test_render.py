@@ -4,9 +4,9 @@ import os
 import sys
 
 sys.path.append(os.path.abspath("."))
-from MagInkCalWeekly.render.render import RenderHelper
-from MagInkCalWeekly.config.config_info import ConfigInfo
-from MagInkCalWeekly.gcal.calendar_info import CalendarInfo
+from raspaglance.render.render import RenderHelper
+from raspaglance.config.config_info import ConfigInfo
+from raspaglance.gcal.calendar_info import CalendarInfo
 from PIL import Image
 import datetime as dt
 
