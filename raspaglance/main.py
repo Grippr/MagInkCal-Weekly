@@ -22,8 +22,7 @@ import os
 import sys
 import logging
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(current_dir)
+sys.path.append(os.path.abspath("."))
 from raspaglance.config import ConfigInfo
 from raspaglance.gcal.calendar_info import CalendarInfo
 from raspaglance.render.render import RenderHelper
