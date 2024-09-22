@@ -8,9 +8,9 @@ Installation
 - `sudo apt update`
 - `sudo apt-get install git`
 - `sudo apt-get install netcat-openbsd`
-- `git clone https://github.com/Grippr/Rasp-A-Glance.git`
-- `python -m venv raspaglance-venv`
-- `. raspaglance-venv/bin/activate`
+- `git clone https://github.com/Grippr/MagInkCalPy.git`
+- `python -m venv maginkcal-venv`
+- `. maginkcal-venv/bin/activate`
 
 - Required python packages
     - `pytest`
