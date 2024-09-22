@@ -6,8 +6,8 @@ import datetime as dt
 import json
 import logging
 
-from MagInkCalWeekly.common import InfoBase
-from MagInkCalWeekly.config import ConfigInfo
+from raspaglance.common import InfoBase
+from raspaglance.config import ConfigInfo
 from .gcal import GcalHelper
 
 # -----------------------------------------------------------------------------

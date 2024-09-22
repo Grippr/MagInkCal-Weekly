@@ -11,7 +11,7 @@ import logging
 
 
 sys.path.append(os.path.abspath("."))
-from MagInkCalWeekly.config import ConfigInfo
+from raspaglance.config import ConfigInfo
 
 logging.basicConfig(level=logging.DEBUG)
 
