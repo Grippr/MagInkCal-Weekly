@@ -3,12 +3,12 @@
   "displayTZ": "US/Eastern",
   "numWeeks": 5,
   "calendars": ["primary"],
-  "calendarImagePath": "./calendar_image.png",
   "weekStartDay": 6,
   "dayOfWeekText": ["M", "T", "W", "T", "F", "S", "S"],
   "thresholdHours": 24,
   "is24h": false,
   "maxEventsPerDay": 4,
+  "calendarImagePath": "./calendar_image.png",
 
   // Display Information
   "screenWidth": 1304,
@@ -22,6 +22,6 @@
   "tokenFileName": "token.pickle",
 
   // Debug
-  "isDisplayToScreen": false,
+  "isDisplayToScreen": true,
   "isShutdownOnComplete": false
 }

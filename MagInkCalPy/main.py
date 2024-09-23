@@ -58,35 +58,47 @@ def main():
 
     except FileNotFoundError as e:
         logger.warning("Ensure that the PiSugar service is running. Continuing without battery level check.")
+        currBatteryLevel = None
 
     # Render an Image
     logger.info("Rendering image")
     renderHelper = RenderHelper.from_config(config=config)
-    image = renderHelper.get_image(cal_info, currBatteryLevel=currBatteryLevel)
-    image.save(config.calendarImagePath)
 
+    if config.calendarImagePath is not None:
+        bw_image, red_image, combined_image = renderHelper.get_image(
+            cal_info, 
+            currBatteryLevel=currBatteryLevel, 
+            include_combined_image=True
+        )
+        combined_image.save(config.calendarImagePath)
+    else: # config.calendarImagePath is None:
+        bw_image, red_image = renderHelper.get_image(
+            cal_info, 
+            currBatteryLevel=currBatteryLevel
+        )
 
-    #     calDict = {'events': eventList, 'calStartDate': calStartDate, 'today': currDate, 'lastRefresh': currDatetime,
-    #                'batteryLevel': currBatteryLevel, 'batteryDisplayMode': batteryDisplayMode,
-    #                'dayOfWeekText': dayOfWeekText, 'weekStartDay': weekStartDay, 'maxEventsPerDay': maxEventsPerDay,
-    #                'is24hour': is24hour}
+    try: 
+        if config.isDisplayToScreen:
+            from display.display import DisplayHelper
+    
+            displayService = DisplayHelper(config.screenWidth, config.screenHeight)
+            # Cycle to prevent ghosting 
+            #if currDate.weekday() == weekStartDay:
+            displayService.calibrate(cycles=0) 
+    
+            displayService.update(bw_image, red_image)
+            displayService.sleep()
+    
+    except Exception as e:
+        logger.error(e)
 
-    #     if isDisplayToScreen:
-    #         from display.display import DisplayHelper
-    #         displayService = DisplayHelper(screenWidth, screenHeight)
-    #         if currDate.weekday() == weekStartDay:
-    #             # calibrate display once a week to prevent ghosting
-    #             displayService.calibrate(cycles=0)  # to calibrate in production
-    #         displayService.update(calBlackImage, calRedImage)
-    #         displayService.sleep()
+    try: 
+        currBatteryLevel = powerService.get_battery()
+        logger.info('Battery level at end: {:.3f}'.format(currBatteryLevel))
+    except FileNotFoundError as e:
+        pass
+    logger.info("Completed daily calendar update")
 
-    #     currBatteryLevel = powerService.get_battery()
-    #     logger.info('Battery level at end: {:.3f}'.format(currBatteryLevel))
-
-    # except Exception as e:
-    #     logger.error(e)
-
-    # logger.info("Completed daily calendar update")
 
     # logger.info("Checking if configured to shutdown safely - Current hour: {}".format(currDatetime.hour))
     # if isShutdownOnComplete:

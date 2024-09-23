@@ -43,7 +43,7 @@ sample_data = {
   "tokenFileName": "token.pickle",
   "calendars": ["primary"],
   "calendarImagePath": calendar_path,
-  "numWeeks": 4
+  "numWeeks": 4,
 }
 
 sample_json = json.dumps(sample_data)

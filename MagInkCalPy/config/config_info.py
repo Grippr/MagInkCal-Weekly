@@ -28,8 +28,8 @@ class ConfigInfo():
     privateDirectory: str
     credentialsFileName: str
     tokenFileName: str
-    calendarImagePath: str
     numWeeks: int
+    calendarImagePath: str | None = None
     logger = logging.getLogger("MagInkCalPy:ConfigInfo")
 
     

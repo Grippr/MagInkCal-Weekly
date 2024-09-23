@@ -101,21 +101,23 @@ class RenderHelper():
         )
         return ret
     
-    def get_image(self, cal_info: CalendarInfo, currBatteryLevel: float):
+    def get_image(self, cal_info: CalendarInfo, currBatteryLevel: float, bool = False, include_combined_image: bool = False):
         # Scaling: PIL doesn't support subpixel rendering, so we need to scale up the image, then downsize it before displaying
         self.high_res_width = self.screenWidth * sf
         self.high_res_height = self.screenHeight * sf
 
         # Create a new image with a white background
-        image = Image.new("RGB", (self.high_res_width, self.high_res_height), WHITE)
+        bw_image = Image.new("RGB", (self.high_res_width, self.high_res_height), WHITE)
+        red_image = Image.new("RGB", (self.high_res_width, self.high_res_height), WHITE)
 
-        draw = ImageDraw.Draw(image)
+        draw_bw = ImageDraw.Draw(bw_image)
+        draw_red = ImageDraw.Draw(red_image)
 
         # Do the date range
         #month_name = cal_info.currDate.strftime("%B") #Eg. "January"
         date_range = f"{cal_info.startDate.strftime('%b %d')} - {cal_info.endDate.strftime('%b %d')}"
         month_font = ImageFont.truetype(str(self.font_bold), self.month_size)
-        draw.text((self.left_margin, self.top_margin), date_range, fill=BLACK, font=month_font)
+        draw_bw.text((self.left_margin, self.top_margin), date_range, fill=BLACK, font=month_font)
 
         # Calculate the day box sizes
         day_width = (self.high_res_width - self.left_margin - self.right_margin) / 7
@@ -127,12 +129,30 @@ class RenderHelper():
             for dayIdx in range(7):
                 x = topleft_x + dayIdx * day_width
                 y = topleft_y + weekIdx * day_height
-                self.draw_day(draw, x, y, day_width, day_height, cal_info, weekIdx, dayIdx)
+                self.draw_day(draw_bw, draw_red, x, y, day_width, day_height, cal_info, weekIdx, dayIdx)
     
-        #image = image.resize((self.screenWidth, self.screenHeight), Image.LANCZOS)
-        return image
+        if include_combined_image:
+            # Create a new image to store the combined result
+            combined_image = bw_image.copy()
 
-    def draw_day(self, draw, x, y, width, height, cal_info, weekIdx, dayIdx):
+            # Get pixel data for both images
+            grayscale_pixels = bw_image.load()
+            red_pixels = red_image.load()
+
+            # Iterate over all pixels
+            for x in range(self.high_res_width):
+                for y in range(self.high_res_height):
+                    # Check if the pixel in the red image is RED
+                    if red_pixels[x, y] == RED:
+                        # Set the pixel in the combined image to RED
+                        combined_image.putpixel((x, y), RED)
+
+        if not include_combined_image:
+            return bw_image, red_image
+        else: # include_combined_image
+            return bw_image, red_image, combined_image
+
+    def draw_day(self, draw, draw_red, x, y, width, height, cal_info, weekIdx, dayIdx):
         # Draw the date
         date = cal_info.startDate + dt.timedelta(days=weekIdx * 7 + dayIdx)
         date_str = date.strftime("%d").lstrip("0")
@@ -146,16 +166,17 @@ class RenderHelper():
             # Draw a red circle
             circle_radius = self.day_size // 2
             circle_center = (x + self.event_margins + circle_radius, y + self.event_margins + circle_radius)
-            draw.ellipse(
+            draw_red.ellipse(
                 [
                     (circle_center[0] - circle_radius, circle_center[1] - circle_radius),
                     (circle_center[0] + circle_radius, circle_center[1] + circle_radius)
                 ],
                 fill=RED
-            )
+            ) 
 
             # Draw the date in white inside the circle
-            draw.text((x + self.event_margins, y + self.event_margins), date_str, fill=WHITE, font=font)
+            draw_red.text((x + self.event_margins, y + self.event_margins), date_str, fill=WHITE, font=font)
+
         else:
             # Draw the date normally
             draw.text((x + self.event_margins, y + self.event_margins), date_str, fill=COLOR, font=font)

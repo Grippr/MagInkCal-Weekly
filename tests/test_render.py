@@ -61,16 +61,20 @@ def test_from_config(config):
     assert render_helper.calendarImagePath == config.calendarImagePath
 
 def test_get_image(render_helper, cal_info):
-    image = render_helper.get_image(cal_info, .5)
-    assert isinstance(image, Image.Image)
-    assert image.size == (render_helper.high_res_width, render_helper.high_res_height)
+    image_bw, image_red = render_helper.get_image(cal_info, .5)
+    assert isinstance(image_bw, Image.Image)
+    assert image_bw.size == (render_helper.high_res_width, render_helper.high_res_height)
+    assert isinstance(image_red, Image.Image)
+    assert image_red.size == (render_helper.high_res_width, render_helper.high_res_height)
 
 def test_draw_day(render_helper, cal_info):
-    draw = MagicMock()
+    draw_bw = MagicMock()
+    draw_red = MagicMock()
     x, y, width, height = 0, 0, 100, 100
     weekIdx, dayIdx = 0, 0
-    render_helper.draw_day(draw, x, y, width, height, cal_info, weekIdx, dayIdx)
-    draw.text.assert_called()
+    render_helper.draw_day(draw_bw, draw_red, x, y, width, height, cal_info, weekIdx, dayIdx)
+    draw_bw.text.assert_called()
+    draw_red.text.assert_called()
 
 def test_log_info(render_helper):
     render_helper.logger = MagicMock()
