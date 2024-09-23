@@ -8,16 +8,7 @@ conversions) that are not tested comprehensively, since my calendar/events are l
 There will also be work needed to adjust the calendar rendering for different screen sizes, such as modifying of the
 CSS stylesheets in the "render" folder.
 """
-# import datetime as dt
-# import sys
-
-# from pytz import timezone
-# from gcal.gcal import GcalHelper
-# from render.render import RenderHelper
-# from power.power import PowerHelper
-# import json
-# import logging
-
+import datetime as dt
 import os
 import sys
 import logging
@@ -37,6 +28,9 @@ def main():
     logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
     logger.setLevel(logging.INFO)
     logger.info("Starting daily calendar update")
+
+    # Get the start time
+    startTime = dt.datetime.now()
 
     # Read the config
     logger.info("Reading config")
@@ -77,20 +71,15 @@ def main():
             currBatteryLevel=currBatteryLevel
         )
 
-    try: 
-        if config.isDisplayToScreen:
-            from display.display import DisplayHelper
-    
-            displayService = DisplayHelper(config.screenWidth, config.screenHeight)
-            # Cycle to prevent ghosting 
-            #if currDate.weekday() == weekStartDay:
-            displayService.calibrate(cycles=0) 
-    
-            displayService.update(bw_image, red_image)
-            displayService.sleep()
-    
-    except Exception as e:
-        logger.error(e)
+    if config.isDisplayToScreen:
+        from display.display import DisplayHelper
+
+        displayService = DisplayHelper(config.screenWidth, config.screenHeight)
+        # Cycle once a week to prevent ghosting 
+        displayService.calibrate(cycles=0) 
+
+        displayService.update(bw_image, red_image)
+        displayService.sleep()
 
     try: 
         currBatteryLevel = powerService.get_battery()

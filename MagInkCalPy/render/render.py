@@ -37,7 +37,7 @@ import datetime as dt
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
-GREY = (128, 128, 128)
+GREY = (67, 67, 67)
 
 sf = 1 #scaling factor
 # -----------------------------------------------------------------------------
@@ -80,8 +80,8 @@ class RenderHelper():
     font_regular = pathlib.Path(__file__).parent / "Quattrocento-Regular.ttf"
 
     month_size = 80*sf
-    day_size = 35*sf
-    event_size = 18*sf
+    day_size = 45*sf
+    event_size = 22*sf
 
     @classmethod
     def from_config(cls, config: ConfigInfo):
@@ -161,7 +161,7 @@ class RenderHelper():
         COLOR = GREY if date.month != cal_info.currDate.month else BLACK
 
         # Draw the date
-        font = ImageFont.truetype(str(self.font_regular), self.day_size)
+        font = ImageFont.truetype(str(self.font_bold), self.day_size)
         if date == cal_info.currDate:
             # Draw a red circle
             circle_radius = self.day_size // 2
@@ -171,7 +171,7 @@ class RenderHelper():
                     (circle_center[0] - circle_radius, circle_center[1] - circle_radius),
                     (circle_center[0] + circle_radius, circle_center[1] + circle_radius)
                 ],
-                fill=RED
+                fill=BLACK
             ) 
 
             # Draw the date in white inside the circle
