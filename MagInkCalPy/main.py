@@ -8,10 +8,12 @@ conversions) that are not tested comprehensively, since my calendar/events are l
 There will also be work needed to adjust the calendar rendering for different screen sizes, such as modifying of the
 CSS stylesheets in the "render" folder.
 """
+from argparse import ArgumentParser
 import datetime as dt
 import os
 import sys
 import logging
+
 
 sys.path.append(os.path.abspath("."))
 from MagInkCalPy.config import ConfigInfo
@@ -21,72 +23,106 @@ from MagInkCalPy.power import PowerHelper
 
 logging.basicConfig(level=logging.DEBUG)
 
+maginkcal_stages = (
+    "read_config"
+    "get_calendar"
+    "render_image"
+    "output_to_display"
+)
+
+def add_main_arguments(parser: ArgumentParser):
+    parser.add_argument(
+        "-f", "--first-stage",
+        choices=maginkcal_stages,
+        help="The stage to start at",
+        default="read_config",
+    )
+
+    parser.add_argument(
+        "-l", "--last-stage",
+        choices=maginkcal_stages,
+        help="The stage to end at",
+        default="output_to_display",
+    )
+
 def main():
-    # Create and configure logger
-    logging.basicConfig(filename="logfile.log", format='%(asctime)s %(levelname)s - %(message)s', filemode='a')
-    logger = logging.getLogger('MagInkCalPy:main')
-    logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
-    logger.setLevel(logging.INFO)
-    logger.info("Starting daily calendar update")
+    # Setup the argument parser
+    parser = ArgumentParser(description="MagInkCalPy: A Calendar for eInk Displays")
 
-    # Get the start time
-    startTime = dt.datetime.now()
+    # Add the arguments
+    add_main_arguments(parser)
+    ConfigInfo.add_arguments(parser)
 
-    # Read the config
-    logger.info("Reading config")
-    config = ConfigInfo.from_file("config.json5")
+    # Parse the arguments
+    args = parser.parse_args()
+    print(main)
+    print(args)
 
-    # # Read the calendar
-    logger.info("Reading calendar")
-    cal_info = CalendarInfo.from_config(config=config)
+    # # Create and configure logger
+    # logging.basicConfig(filename="logfile.log", format='%(asctime)s %(levelname)s - %(message)s', filemode='a')
+    # logger = logging.getLogger('MagInkCalPy:main')
+    # logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
+    # logger.setLevel(logging.INFO)
+    # logger.info("Starting daily calendar update")
 
-    # Establish current date and time information
-    # Note: For Python datetime.weekday() - Monday = 0, Sunday = 6
-    # For this implementation, each week starts on a Sunday and the calendar begins on the nearest elapsed Sunday
-    # The calendar will also display 5 weeks of events to cover the upcoming month, ending on a Saturday
-    try: 
-        powerService = PowerHelper()
-        powerService.sync_time()
-        currBatteryLevel = powerService.get_battery()
-        logger.info('Battery level at start: {:.3f}'.format(currBatteryLevel))
+    # # Get the start time
+    # startTime = dt.datetime.now()
 
-    except FileNotFoundError as e:
-        logger.warning("Ensure that the PiSugar service is running. Continuing without battery level check.")
-        currBatteryLevel = None
+    # # Read the config
+    # logger.info("Reading config")
+    # config = ConfigInfo.from_file("config.json5")
 
-    # Render an Image
-    logger.info("Rendering image")
-    renderHelper = RenderHelper.from_config(config=config)
+    # # # Read the calendar
+    # logger.info("Reading calendar")
+    # cal_info = CalendarInfo.from_config(config=config)
 
-    if config.calendarImagePath is not None:
-        bw_image, red_image, combined_image = renderHelper.get_image(
-            cal_info, 
-            currBatteryLevel=currBatteryLevel, 
-            include_combined_image=True
-        )
-        combined_image.save(config.calendarImagePath)
-    else: # config.calendarImagePath is None:
-        bw_image, red_image = renderHelper.get_image(
-            cal_info, 
-            currBatteryLevel=currBatteryLevel
-        )
+    # # Establish current date and time information
+    # # Note: For Python datetime.weekday() - Monday = 0, Sunday = 6
+    # # For this implementation, each week starts on a Sunday and the calendar begins on the nearest elapsed Sunday
+    # # The calendar will also display 5 weeks of events to cover the upcoming month, ending on a Saturday
+    # try: 
+    #     powerService = PowerHelper()
+    #     powerService.sync_time()
+    #     currBatteryLevel = powerService.get_battery()
+    #     logger.info('Battery level at start: {:.3f}'.format(currBatteryLevel))
 
-    if config.isDisplayToScreen:
-        from display.display import DisplayHelper
+    # except FileNotFoundError as e:
+    #     logger.warning("Ensure that the PiSugar service is running. Continuing without battery level check.")
+    #     currBatteryLevel = None
 
-        displayService = DisplayHelper(config.screenWidth, config.screenHeight)
-        # Cycle once a week to prevent ghosting 
-        displayService.calibrate(cycles=0) 
+    # # Render an Image
+    # logger.info("Rendering image")
+    # renderHelper = RenderHelper.from_config(config=config)
 
-        displayService.update(bw_image, red_image)
-        displayService.sleep()
+    # if config.calendarImagePath is not None:
+    #     bw_image, red_image, combined_image = renderHelper.get_image(
+    #         cal_info, 
+    #         currBatteryLevel=currBatteryLevel, 
+    #         include_combined_image=True
+    #     )
+    #     combined_image.save(config.calendarImagePath)
+    # else: # config.calendarImagePath is None:
+    #     bw_image, red_image = renderHelper.get_image(
+    #         cal_info, 
+    #         currBatteryLevel=currBatteryLevel
+    #     )
 
-    try: 
-        currBatteryLevel = powerService.get_battery()
-        logger.info('Battery level at end: {:.3f}'.format(currBatteryLevel))
-    except FileNotFoundError as e:
-        pass
-    logger.info("Completed daily calendar update")
+    # if config.isDisplayToScreen:
+    #     from display.display import DisplayHelper
+
+    #     displayService = DisplayHelper(config.screenWidth, config.screenHeight)
+    #     # Cycle once a week to prevent ghosting 
+    #     displayService.calibrate(cycles=0) 
+
+    #     displayService.update(bw_image, red_image)
+    #     displayService.sleep()
+
+    # try: 
+    #     currBatteryLevel = powerService.get_battery()
+    #     logger.info('Battery level at end: {:.3f}'.format(currBatteryLevel))
+    # except FileNotFoundError as e:
+    #     pass
+    # logger.info("Completed daily calendar update")
 
 
     # logger.info("Checking if configured to shutdown safely - Current hour: {}".format(currDatetime.hour))

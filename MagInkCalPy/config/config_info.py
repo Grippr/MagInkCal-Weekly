@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
+from argparse import ArgumentParser
 from dataclasses import dataclass, fields, asdict
 import logging
 import json5 as json # json5 is a superset of JSON that allows comments
@@ -29,7 +30,7 @@ class ConfigInfo():
     credentialsFileName: str
     tokenFileName: str
     numWeeks: int
-    calendarImagePath: str | None = None
+    calendarImagePath: str = None
     logger = logging.getLogger("MagInkCalPy:ConfigInfo")
 
     
@@ -61,3 +62,25 @@ class ConfigInfo():
     
     def get_tz(self):
         return timezone(self.displayTZ)
+   
+    @classmethod
+    def add_arguments(cls, parser: ArgumentParser):
+        parser.add_argument(
+            "-c", "--config", 
+            help="Path to the config file", 
+            default="config.json5"
+        )
+
+        for field in fields(cls):
+            if field.default is not None:
+                parser.add_argument(
+                    f"--{field.name}", 
+                    type=field.type, 
+                    help=f"{field.name} (default: {field.default})"
+                )
+            else:
+                parser.add_argument(
+                    f"--{field.name}", 
+                    type=field.type, 
+                    help=f"{field.name}"
+                )
