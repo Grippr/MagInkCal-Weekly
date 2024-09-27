@@ -29,21 +29,24 @@ maginkcal_stages = (
     "output_to_display",
 )
 
+def stage_leq(stage1, stage2):
+    stage_order = {stage: index for index, stage in enumerate(maginkcal_stages)}
+    return stage_order[stage1] <= stage_order[stage2]
+
+
 def add_main_arguments(parser: ArgumentParser):
+    parser.add_argument(
+        "-c", "--config", 
+        help="Path to the config file", 
+        default="config.json5"
+    )
+
     parser.add_argument(
         "-f", "--first-stage",
         type = str,
         choices=maginkcal_stages,
         help="The stage to start at",
         default="read_config",
-    )
-
-    parser.add_argument(
-        "-l", "--last-stage",
-        type = str,
-        choices=maginkcal_stages,
-        help="The stage to end at",
-        default="output_to_display",
     )
 
 def main():
@@ -56,74 +59,75 @@ def main():
 
     # Parse the arguments
     args = parser.parse_args()
-    print(main)
-    print(args)
 
-    # # Create and configure logger
-    # logging.basicConfig(filename="logfile.log", format='%(asctime)s %(levelname)s - %(message)s', filemode='a')
-    # logger = logging.getLogger('MagInkCalPy:main')
-    # logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
-    # logger.setLevel(logging.INFO)
-    # logger.info("Starting daily calendar update")
+    # Create and configure logger
+    logging.basicConfig(filename="logfile.log", format='%(asctime)s %(levelname)s - %(message)s', filemode='a')
+    logger = logging.getLogger('MagInkCalPy:main')
+    logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
+    logger.setLevel(logging.INFO)
+    logger.info("Starting daily calendar update")
 
-    # # Get the start time
-    # startTime = dt.datetime.now()
+    # Get the start time
+    startTime = dt.datetime.now()
 
-    # # Read the config
-    # logger.info("Reading config")
-    # config = ConfigInfo.from_file("config.json5")
+    # Read the config
+    logger.info("Reading config")
+    config = ConfigInfo.from_file(args.config)
 
-    # # # Read the calendar
-    # logger.info("Reading calendar")
-    # cal_info = CalendarInfo.from_config(config=config)
+    # Read the calendar
+    logger.info("Reading calendar")
+    cal_info = CalendarInfo.from_config(config=config)
 
-    # # Establish current date and time information
-    # # Note: For Python datetime.weekday() - Monday = 0, Sunday = 6
-    # # For this implementation, each week starts on a Sunday and the calendar begins on the nearest elapsed Sunday
-    # # The calendar will also display 5 weeks of events to cover the upcoming month, ending on a Saturday
-    # try: 
-    #     powerService = PowerHelper()
-    #     powerService.sync_time()
-    #     currBatteryLevel = powerService.get_battery()
-    #     logger.info('Battery level at start: {:.3f}'.format(currBatteryLevel))
+    # Establish current date and time information
+    # Note: For Python datetime.weekday() - Monday = 0, Sunday = 6
+    # For this implementation, each week starts on a Sunday and the calendar begins on the nearest elapsed Sunday
+    # The calendar will also display 5 weeks of events to cover the upcoming month, ending on a Saturday
+    logger.info("Getting battery level")
+    try: 
+        powerService = PowerHelper()
+        powerService.sync_time()
+        currBatteryLevel = powerService.get_battery()
+        logger.info('Battery level at start: {:.3f}'.format(currBatteryLevel))
 
-    # except FileNotFoundError as e:
-    #     logger.warning("Ensure that the PiSugar service is running. Continuing without battery level check.")
-    #     currBatteryLevel = None
+    except FileNotFoundError as e:
+        logger.warning("Ensure that the PiSugar service is running. Continuing without battery level check.")
+        currBatteryLevel = None
 
-    # # Render an Image
-    # logger.info("Rendering image")
-    # renderHelper = RenderHelper.from_config(config=config)
+    # Render an Image
+    logger.info("Rendering image")
+    renderHelper = RenderHelper.from_config(config=config)
 
-    # if config.calendarImagePath is not None:
-    #     bw_image, red_image, combined_image = renderHelper.get_image(
-    #         cal_info, 
-    #         currBatteryLevel=currBatteryLevel, 
-    #         include_combined_image=True
-    #     )
-    #     combined_image.save(config.calendarImagePath)
-    # else: # config.calendarImagePath is None:
-    #     bw_image, red_image = renderHelper.get_image(
-    #         cal_info, 
-    #         currBatteryLevel=currBatteryLevel
-    #     )
+    if config.calendarImagePath is not None:
+        bw_image, red_image, combined_image = renderHelper.get_image(
+            cal_info, 
+            currBatteryLevel=currBatteryLevel, 
+            include_combined_image=True
+        )
+        combined_image.save(config.calendarImagePath)
+    else: # config.calendarImagePath is None:
+        bw_image, red_image = renderHelper.get_image(
+            cal_info, 
+            currBatteryLevel=currBatteryLevel
+        )
 
-    # if config.isDisplayToScreen:
-    #     from display.display import DisplayHelper
+    combined_image.show()
 
-    #     displayService = DisplayHelper(config.screenWidth, config.screenHeight)
-    #     # Cycle once a week to prevent ghosting 
-    #     displayService.calibrate(cycles=0) 
+    if config.isDisplayToScreen:
+        from display.display import DisplayHelper
 
-    #     displayService.update(bw_image, red_image)
-    #     displayService.sleep()
+        displayService = DisplayHelper(config.screenWidth, config.screenHeight)
+        # Cycle once a week to prevent ghosting 
+        displayService.calibrate(cycles=0) 
 
-    # try: 
-    #     currBatteryLevel = powerService.get_battery()
-    #     logger.info('Battery level at end: {:.3f}'.format(currBatteryLevel))
-    # except FileNotFoundError as e:
-    #     pass
-    # logger.info("Completed daily calendar update")
+        displayService.update(bw_image, red_image)
+        displayService.sleep()
+
+    try: 
+        currBatteryLevel = powerService.get_battery()
+        logger.info('Battery level at end: {:.3f}'.format(currBatteryLevel))
+    except FileNotFoundError as e:
+        pass
+    logger.info("Completed daily calendar update")
 
 
     # logger.info("Checking if configured to shutdown safely - Current hour: {}".format(currDatetime.hour))

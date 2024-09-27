@@ -31,7 +31,6 @@ class ConfigInfo():
     tokenFileName: str
     numWeeks: int
     calendarImagePath: str = None
-    logger = logging.getLogger("MagInkCalPy:ConfigInfo")
 
     
     @classmethod
@@ -49,9 +48,10 @@ class ConfigInfo():
         return json.dumps(asdict(self))
 
     def log_info(self):
+        logger = logging.getLogger("MagInkCalPy:ConfigInfo")
         for field in fields(self):
             value = getattr(self, field.name)
-            self.logger.info(f"{field.name}: {value}")
+            logger.info(f"{field.name}: {value}")
     
     # CalendarInfo Utilities
     def get_credential_path(self):
@@ -65,12 +65,6 @@ class ConfigInfo():
    
     @classmethod
     def add_arguments(cls, parser: ArgumentParser):
-        parser.add_argument(
-            "-c", "--config", 
-            help="Path to the config file", 
-            default="config.json5"
-        )
-
         for field in fields(cls):
             if field.default is not MISSING:
                 parser.add_argument(
@@ -82,5 +76,4 @@ class ConfigInfo():
                 parser.add_argument(
                     f"--{field.name}", 
                     type=field.type, 
-                    help=f"{field.name}"
                 )

@@ -63,25 +63,33 @@ class RenderHelper():
 
     # Calendar Margins
     top_margin    = 10*sf
-    left_margin   = 10*sf
+    left_margin   = 20*sf
     bottom_margin = 10*sf
     right_margin  = 10*sf
 
     # Month spacing
-    month_to_day_spacing = 20*sf
+    header_height = 140*sf
 
     # Event spacing
-    day_to_event_spacing = 5*sf
-    max_event_width = 17
+    day_to_event_spacing = 10*sf
+    max_event_width = 18
     event_margins = 5*sf
 
     # Fonts
-    font_bold = pathlib.Path(__file__).parent / "Quattrocento-Bold.ttf"
-    font_regular = pathlib.Path(__file__).parent / "Quattrocento-Regular.ttf"
-
+    month_font_fn = pathlib.Path(__file__).parent / "Quattrocento-Bold.ttf"
     month_size = 80*sf
+
+    day_font_fn = pathlib.Path(__file__).parent / "Bookerly.ttf"
     day_size = 45*sf
-    event_size = 22*sf
+
+    event_font_fn = pathlib.Path(__file__).parent / "Bookerly-Bold.ttf"
+    event_size = 16*sf
+
+    #pathlib.Path(__file__).parent / "Bookerly.ttf"
+    #pathlib.Path(__file__).parent / "Bookerly-Bold.ttf"
+    #pathlib.Path(__file__).parent / "Bookerly-Display.ttf"
+    #pathlib.Path(__file__).parent / "Bookerly-Display-Bold.ttf"
+
 
     @classmethod
     def from_config(cls, config: ConfigInfo):
@@ -116,15 +124,42 @@ class RenderHelper():
         # Do the date range
         #month_name = cal_info.currDate.strftime("%B") #Eg. "January"
         date_range = f"{cal_info.startDate.strftime('%b %d')} - {cal_info.endDate.strftime('%b %d')}"
-        month_font = ImageFont.truetype(str(self.font_bold), self.month_size)
-        draw_bw.text((self.left_margin, self.top_margin), date_range, fill=BLACK, font=month_font)
+        month_font = ImageFont.truetype(str(self.month_font_fn), self.month_size)
+
+        # Draw the date_range text centered
+        text_width, text_height = draw_bw.textbbox((0, 0), date_range, font=month_font)[2:]
+        x = (self.high_res_width - text_width) / 2
+        y = self.top_margin + (self.header_height - text_height) / 2
+        draw_bw.text((x, y), date_range, fill=BLACK, font=month_font)
+
+        # Draw the battery level
+        if currBatteryLevel is not None:
+            battery_image = Image.open(pathlib.Path(__file__).parent / "battery.png")
+            battery_width, battery_height = battery_image.size
+            state_height = battery_height // 5
+
+            state_idx = int((1-currBatteryLevel) * 5)
+
+            battery_state_image = battery_image.crop((0, state_idx * state_height, battery_width, (state_idx + 1) * state_height))
+            
+            # Create a new image with a white background
+            battery_state_image_with_bg = Image.new("RGB", battery_state_image.size, WHITE)
+            
+            # Paste the battery state image onto the white background
+            battery_state_image_with_bg.paste(battery_state_image, (0, 0), battery_state_image)
+
+            # Put the new image onto the main image
+            x = self.high_res_width - self.right_margin - battery_state_image_with_bg.width
+            y = self.top_margin
+            bw_image.paste(battery_state_image_with_bg, (x,y))
+
 
         # Calculate the day box sizes
         day_width = (self.high_res_width - self.left_margin - self.right_margin) / 7
-        day_height = (self.high_res_height - self.top_margin - self.bottom_margin - self.month_to_day_spacing - self.month_size) / self.numWeeks
+        day_height = (self.high_res_height - self.top_margin - self.bottom_margin - self.header_height) / self.numWeeks
 
         topleft_x = self.left_margin
-        topleft_y = self.top_margin + self.month_size + self.month_to_day_spacing
+        topleft_y = self.top_margin + self.header_height
         for weekIdx in range(self.numWeeks):
             for dayIdx in range(7):
                 x = topleft_x + dayIdx * day_width
@@ -143,7 +178,7 @@ class RenderHelper():
             for x in range(self.high_res_width):
                 for y in range(self.high_res_height):
                     # Check if the pixel in the red image is RED
-                    if red_pixels[x, y] == RED:
+                    if red_pixels[x, y] == BLACK:
                         # Set the pixel in the combined image to RED
                         combined_image.putpixel((x, y), RED)
 
@@ -161,11 +196,13 @@ class RenderHelper():
         COLOR = GREY if date.month != cal_info.currDate.month else BLACK
 
         # Draw the date
-        font = ImageFont.truetype(str(self.font_bold), self.day_size)
+        day_font = ImageFont.truetype(str(self.day_font_fn), self.day_size)
         if date == cal_info.currDate:
+            text_width, text_height = draw_red.textbbox((0, 0), date_str, font=day_font)[2:]
+            circle_radius = (text_width + 2*sf)/2
+
             # Draw a red circle
-            circle_radius = self.day_size // 2
-            circle_center = (x + self.event_margins + circle_radius, y + self.event_margins + circle_radius)
+            circle_center = (x + self.event_margins + circle_radius-2, y + self.event_margins + circle_radius)
             draw_red.ellipse(
                 [
                     (circle_center[0] - circle_radius, circle_center[1] - circle_radius),
@@ -175,11 +212,11 @@ class RenderHelper():
             ) 
 
             # Draw the date in white inside the circle
-            draw_red.text((x + self.event_margins, y + self.event_margins), date_str, fill=WHITE, font=font)
+            draw_red.text((x + self.event_margins, y + self.event_margins), date_str, fill=WHITE, font=day_font)
 
         else:
             # Draw the date normally
-            draw.text((x + self.event_margins, y + self.event_margins), date_str, fill=COLOR, font=font)
+            draw.text((x + self.event_margins, y + self.event_margins), date_str, fill=COLOR, font=day_font)
 
         # Draw the events
         event_str = ""
@@ -189,8 +226,8 @@ class RenderHelper():
                 break
             event_str += event.get_cal_str(max_width=self.max_event_width) + "\n"
 
-        font = ImageFont.truetype(str(self.font_regular), self.event_size)
-        draw.text((x + self.event_margins, y + self.event_margins + self.day_size + self.day_to_event_spacing), event_str, fill=COLOR, font=font)
+        event_font = ImageFont.truetype(str(self.event_font_fn), self.event_size)
+        draw.text((x + self.event_margins, y + self.event_margins + self.day_size + self.day_to_event_spacing), event_str, fill=COLOR, font=event_font)
 
     def image_to_file(self):
         ...
