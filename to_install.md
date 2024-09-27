@@ -8,6 +8,17 @@ Installation
 - `sudo apt update`
 - `sudo apt-get install git`
 - `sudo apt-get install netcat-openbsd`
+- `sudo apt-get install python3-setuptools`
+- Install lg Library:
+```
+wget https://github.com/joan2937/lg/archive/master.zip
+unzip master.zip
+cd lg-master
+make
+sudo make install
+```
+
+
 - `git clone https://github.com/Grippr/MagInkCalPy.git`
 - `python -m venv maginkcal-venv`
 - `. maginkcal-venv/bin/activate`
