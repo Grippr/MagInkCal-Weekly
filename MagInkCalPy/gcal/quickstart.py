@@ -14,11 +14,21 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+import os
+import sys
+sys.path.append(os.path.abspath("."))
+from MagInkCalPy.config import ConfigInfo
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 
 def main():
+    """
+    Get the configuration
+    """
+    config = ConfigInfo.from_file("config.json5")
+
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -26,8 +36,13 @@ def main():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    cred_path = config.get_credential_path()
+    token_path = config.get_token_path()
+    print(f"Token Path: {token_path}")
+    print(f"Credential Path: {cred_path}")
+
+    if os.path.exists(token_path):
+        with open(token_path) as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -35,10 +50,10 @@ def main():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                cred_path, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open(token_path) as token:
             pickle.dump(creds, token)
 
     service = build('calendar', 'v3', credentials=creds)

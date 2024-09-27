@@ -7,6 +7,7 @@ import logging
 import json5 as json # json5 is a superset of JSON that allows comments
 import os
 from pytz import timezone
+from pathlib import Path
 
 # -----------------------------------------------------------------------------
 # Calendar Config
@@ -55,10 +56,10 @@ class ConfigInfo():
     
     # CalendarInfo Utilities
     def get_credential_path(self):
-        return os.path.join(self.privateDirectory, self.credentialsFileName)
+        return Path(self.privateDirectory) / self.credentialsFileName
 
     def get_token_path(self):
-        return os.path.join(self.privateDirectory, self.tokenFileName)
+        return Path(self.privateDirectory) / self.tokenFileName
     
     def get_tz(self):
         return timezone(self.displayTZ)
