@@ -2,7 +2,7 @@
 # Imports
 # -----------------------------------------------------------------------------
 from argparse import ArgumentParser
-from dataclasses import dataclass, fields, asdict
+from dataclasses import dataclass, fields, asdict, MISSING
 import logging
 import json5 as json # json5 is a superset of JSON that allows comments
 import os
@@ -72,7 +72,7 @@ class ConfigInfo():
         )
 
         for field in fields(cls):
-            if field.default is not None:
+            if field.default is not MISSING:
                 parser.add_argument(
                     f"--{field.name}", 
                     type=field.type, 

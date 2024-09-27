@@ -24,15 +24,15 @@ from MagInkCalPy.power import PowerHelper
 logging.basicConfig(level=logging.DEBUG)
 
 maginkcal_stages = (
-    "read_config"
-    "get_calendar"
-    "render_image"
-    "output_to_display"
+    "get_calendar",
+    "render_image",
+    "output_to_display",
 )
 
 def add_main_arguments(parser: ArgumentParser):
     parser.add_argument(
         "-f", "--first-stage",
+        type = str,
         choices=maginkcal_stages,
         help="The stage to start at",
         default="read_config",
@@ -40,6 +40,7 @@ def add_main_arguments(parser: ArgumentParser):
 
     parser.add_argument(
         "-l", "--last-stage",
+        type = str,
         choices=maginkcal_stages,
         help="The stage to end at",
         default="output_to_display",
