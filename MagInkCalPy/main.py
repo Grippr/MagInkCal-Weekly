@@ -15,7 +15,6 @@ import sys
 import logging
 
 
-sys.path.append(os.path.abspath("."))
 from MagInkCalPy.config import ConfigInfo
 from MagInkCalPy.gcal.calendar_info import CalendarInfo
 from MagInkCalPy.render.render import RenderHelper

@@ -8,7 +8,6 @@ import datetime as dt
 import json
 import logging
 
-sys.path.append(os.path.abspath("."))
 from MagInkCalPy.gcal import EventInfo, CalendarInfo
 
 logging.basicConfig(level=logging.DEBUG)

@@ -3,7 +3,6 @@ from unittest.mock import MagicMock
 import os
 import sys
 
-sys.path.append(os.path.abspath("."))
 from MagInkCalPy.render.render import RenderHelper
 from MagInkCalPy.config.config_info import ConfigInfo
 from MagInkCalPy.gcal.calendar_info import CalendarInfo

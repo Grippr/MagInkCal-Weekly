@@ -10,7 +10,6 @@ from dataclasses import fields
 import logging
 
 
-sys.path.append(os.path.abspath("."))
 from MagInkCalPy.config import ConfigInfo
 
 logging.basicConfig(level=logging.DEBUG)

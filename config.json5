@@ -16,10 +16,15 @@
   "rotateAngle": 0,
   "batteryDisplayMode": 1,
 
-  // Credentials
+  // Private
   "privateDirectory": "./private",
-  "credentialsFileName": "credentials.json",
-  "tokenFileName": "token.pickle",
+
+  // Credentials
+  //"credentialsFileName": "credentials.json",
+  //"tokenFileName": "token.pickle",
+
+  // ICAL Url
+  "icalUrl": "ical_url.txt",
 
   // Debug
   "isDisplayToScreen": true,

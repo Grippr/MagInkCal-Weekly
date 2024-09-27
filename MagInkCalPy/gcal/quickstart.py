@@ -16,7 +16,6 @@ from google.auth.transport.requests import Request
 
 import os
 import sys
-sys.path.append(os.path.abspath("."))
 from MagInkCalPy.config import ConfigInfo
 
 # If modifying these scopes, delete the file token.pickle.

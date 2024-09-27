@@ -6,8 +6,11 @@ import datetime as dt
 import json
 import logging
 
+import os
+import sys
+
 from MagInkCalPy.config import ConfigInfo
-from .gcal import GcalHelper
+#from MagInkCalPy.gcal import icalHelper
 
 # -----------------------------------------------------------------------------
 # Configuration
@@ -193,6 +196,9 @@ class CalendarInfo():
 def debug_this():
     logging.basicConfig(level=logging.INFO)
     config = ConfigInfo.from_file("config.json5")
-    cal_info = CalendarInfo.from_config(config=config)
-    cal_info.log_info()
-    print(cal_info.to_json())
+    # cal_info = CalendarInfo.from_config(config=config)
+    # cal_info.log_info()
+    # print(cal_info.to_json())
+
+if __name__ == "__main__":
+    debug_this()
