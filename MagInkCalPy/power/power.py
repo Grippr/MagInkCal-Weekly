@@ -16,15 +16,14 @@ class PowerHelper:
     def get_battery(self):
         # start displaying on eink display
         # command = ['echo "get battery" | nc -q 0 127.0.0.1 8423']
-        battery_float = -1
+        battery_float = None
         try:
             ps = subprocess.Popen(('echo', 'get battery'), stdout=subprocess.PIPE)
             result = subprocess.check_output(('nc', '-q', '0', '127.0.0.1', '8423'), stdin=ps.stdout)
             ps.wait()
             result_str = result.decode('utf-8').rstrip()
             battery_level = result_str.split()[-1]
-            battery_float = float(battery_level)
-            #battery_level = "{:.3f}".format(battery_float)
+            battery_float = float(battery_level)/100
         except (ValueError, subprocess.CalledProcessError) as e:
             self.logger.info('Invalid battery output')
         return battery_float
