@@ -53,7 +53,7 @@ def main():
                 cred_path, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open(token_path) as token:
+        with open(token_path,"wb") as token:
             pickle.dump(creds, token)
 
     service = build('calendar', 'v3', credentials=creds)
