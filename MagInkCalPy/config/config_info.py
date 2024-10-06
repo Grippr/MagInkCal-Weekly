@@ -28,9 +28,8 @@ class ConfigInfo():
     is24h: bool
     calendars: list
     privateDirectory: str
-    credentialsFileName: str
-    tokenFileName: str
     numWeeks: int
+    icalUrl: str
     calendarImagePath: str = None
 
     
@@ -55,12 +54,13 @@ class ConfigInfo():
             logger.info(f"{field.name}: {value}")
     
     # CalendarInfo Utilities
-    def get_credential_path(self):
-        return Path(self.privateDirectory) / self.credentialsFileName
+    def get_ical_url_file_path(self):
+        return Path(self.privateDirectory) / self.icalUrl
 
-    def get_token_path(self):
-        return Path(self.privateDirectory) / self.tokenFileName
-    
+    def get_ical_url(self):
+        with open(self.get_ical_url_file_path()) as fp:
+            return fp.read().strip()
+
     def get_tz(self):
         return timezone(self.displayTZ)
    

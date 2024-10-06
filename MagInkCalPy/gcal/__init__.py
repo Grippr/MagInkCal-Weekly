@@ -1,1 +1,1 @@
-from .calendar_info import EventInfo, CalendarInfo
+from MagInkCalPy.gcal.calendar_info import EventInfo, CalendarInfo

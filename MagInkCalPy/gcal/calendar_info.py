@@ -10,7 +10,7 @@ import os
 import sys
 
 from MagInkCalPy.config import ConfigInfo
-#from MagInkCalPy.gcal import icalHelper
+from MagInkCalPy.gcal.gcal import GcalHelper
 
 # -----------------------------------------------------------------------------
 # Configuration
@@ -91,12 +91,12 @@ class CalendarInfo():
         self.events = []
 
     @classmethod
-    def from_config(cls, config: ConfigInfo):
+    def from_ical(cls, config: ConfigInfo):
         #Initialize the calendar
         ret = CalendarInfo()
 
-        # Grab some information from the config
-        calendars = config.calendars
+    #     # Grab some information from the config
+    #     calendars = config.calendars
 
         displayTZ = config.get_tz()
         currDatetime = dt.datetime.now(displayTZ)
@@ -110,93 +110,93 @@ class CalendarInfo():
 
         assert calStartDate.weekday() == config.weekStartDay, f"Week start day ({config.weekStartDay}) does not match the start date ({calStartDate.weekday()})"
 
-        cred_path=config.get_credential_path()
-        token_path=config.get_token_path()
-
         ret.logger.debug(f"currDate: {currDate}")
         ret.logger.debug(f"calStartDate: {calStartDate}")
         ret.logger.debug(f"calEndDate: {calEndDate}")
         ret.logger.debug(f"calStartDatetime: {calStartDatetime}")
         ret.logger.debug(f"calEndDatetime: {calEndDatetime}")
-        ret.logger.debug(f"calEndDatetime: {cred_path}")
-        ret.logger.debug(f"calEndDatetime: {token_path}")
+        ret.logger.debug(f"icalUrl: {config.get_ical_url_file_path()}")
 
         # Set up the gcalHelper
-        gcalHelper = GcalHelper(
-            cred_path=cred_path,
-            token_path=token_path,
-        )
-
-        # Get the events
-        eventList = gcalHelper.retrieve_events(
-            calendars, 
+        gcalHelper = GcalHelper(config)
+        gcalHelper.retrieve_events(
+            config.get_ical_url(),
             calStartDatetime, 
             calEndDatetime, 
-            displayTZ, 
-            config.thresholdHours
+            displayTZ
         )
 
-        # Save the events
-        for event_dict in eventList:
-            event = EventInfo(**event_dict)
-            ret.events.append(event)
-        ret.currDate = currDate
-        ret.startDate = calStartDate
-        ret.endDate = calEndDate
+    #     # Get the events
+    #     eventList = gcalHelper.retrieve_events(
+    #         calendars, 
+    #         calStartDatetime, 
+    #         calEndDatetime, 
+    #         displayTZ, 
+    #         config.thresholdHours
+    #     )
 
-        return ret
+    #     # Save the events
+    #     for event_dict in eventList:
+    #         event = EventInfo(**event_dict)
+    #         ret.events.append(event)
+    #     ret.currDate = currDate
+    #     ret.startDate = calStartDate
+    #     ret.endDate = calEndDate
 
-    @classmethod
-    def from_json(cls, json_str):
-        data = json.loads(json_str, object_hook=_datetime_parser)
-        events = [EventInfo(**event) for event in data['events']]
+    #     return ret
 
-        ret = cls()
-        ret.events = events
+    # @classmethod
+    # def from_json(cls, json_str):
+    #     data = json.loads(json_str, object_hook=_datetime_parser)
+    #     events = [EventInfo(**event) for event in data['events']]
 
-        ret.currDate      = data['currDate']
-        ret.startDate = data['startDate']
-        ret.endDate   = data['endDate']
+    #     ret = cls()
+    #     ret.events = events
 
-        return ret
+    #     ret.currDate      = data['currDate']
+    #     ret.startDate = data['startDate']
+    #     ret.endDate   = data['endDate']
 
-    @classmethod
-    def from_file(cls, filename):
-        with open(filename, "r") as file:
-            json_str = file.read()
-        return cls.from_json(json_str)
+    #     return ret
 
-    def to_json(self):
-        return json.dumps({
-            "events": [json.loads(event.to_json()) for event in self.events],
-            "startDate": _datetime_serializer(self.startDate),
-            "endDate": _datetime_serializer(self.endDate),
-            "currDate": _datetime_serializer(self.currDate)
-        })
+    # @classmethod
+    # def from_file(cls, filename):
+    #     with open(filename, "r") as file:
+    #         json_str = file.read()
+    #     return cls.from_json(json_str)
 
-    def to_file(self, filename):
-        json_str = self.to_json()
-        with open(filename, "w") as file:
-            file.write(json.dumps(json.loads(json_str), indent=4))
+    # def to_json(self):
+    #     return json.dumps({
+    #         "events": [json.loads(event.to_json()) for event in self.events],
+    #         "startDate": _datetime_serializer(self.startDate),
+    #         "endDate": _datetime_serializer(self.endDate),
+    #         "currDate": _datetime_serializer(self.currDate)
+    #     })
 
-    def log_info(self, full=False):
-        self.logger.info("Calendar Info:")
-        self.logger.info(f"    Current day: {self.currDate}")
-        self.logger.info(f"    Cal Start Dat: {self.startDate}")
-        self.logger.info(f"    Cal End Date: {self.endDate}")
-        self.logger.info(f"    Num Events:{len(self.events)}")
-        if full:
-            for event in self.events:
-                event.log_info(self.logger)
+    # def to_file(self, filename):
+    #     json_str = self.to_json()
+    #     with open(filename, "w") as file:
+    #         file.write(json.dumps(json.loads(json_str), indent=4))
+
+    # def log_info(self, full=False):
+    #     self.logger.info("Calendar Info:")
+    #     self.logger.info(f"    Current day: {self.currDate}")
+    #     self.logger.info(f"    Cal Start Dat: {self.startDate}")
+    #     self.logger.info(f"    Cal End Date: {self.endDate}")
+    #     self.logger.info(f"    Num Events:{len(self.events)}")
+    #     if full:
+    #         for event in self.events:
+    #             event.log_info(self.logger)
     
-    def get_events_from_date(self, date):
-        return [event for event in self.events if event.startDatetime.date() == date]
+    # def get_events_from_date(self, date):
+    #     return [event for event in self.events if event.startDatetime.date() == date]
     
 
 def debug_this():
     logging.basicConfig(level=logging.INFO)
     config = ConfigInfo.from_file("config.json5")
-    # cal_info = CalendarInfo.from_config(config=config)
+    cal_info = CalendarInfo()
+    cal_info.from_ical(config)
     # cal_info.log_info()
     # print(cal_info.to_json())
 
